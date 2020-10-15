@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "7e7687d1-5f07-4b70-974b-b11994da4ec6",
+		"name": "2. Check VM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create AAD",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b1b49f9-bd4e-429c-be15-37b3dce38f5a",
+						"exec": [
+							"// Retrieve access_token and set PM environment variable for all subsequent request",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"var json = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"bearerToken\", json.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{resource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{tenantId}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Instance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4ef70b6f-ed7c-49cd-97c3-c04b5f2768a7",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"",
+							"pm.test(\"Check Agent is running?\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.vmAgent.statuses[0].message).to.eql(\"Guest Agent is running\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Compute/virtualMachines/{{vmName}}/InstanceView?api-version=2017-12-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Compute",
+						"virtualMachines",
+						"{{vmName}}",
+						"InstanceView"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-12-01"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "08b7cb21-27bd-4408-8962-ed7cc7f8d3c9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4378b55e-6597-4a38-a13e-f5ddf4c708a8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

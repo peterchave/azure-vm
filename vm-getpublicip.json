@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "b5143152-06fa-45d7-ba00-2c20a7717e51",
+		"name": "4. Get Public IP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create AAD",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bbf4b7ea-9b2e-4b77-b4d1-15f0dc4c0337",
+						"exec": [
+							"// Retrieve access_token and set PM environment variable for all subsequent request",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"var json = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"bearerToken\", json.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{resource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{tenantId}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Public IP",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f1785d4d-3152-466b-bc21-5956ca95556d",
+						"exec": [
+							"// Retrieve access_token and set PM environment variable for all subsequent request",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"var json = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"publicIPaddress\", json.properties.ipAddress);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/publicIPAddresses/{{publicIP}}?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"publicIPAddresses",
+						"{{publicIP}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "083e2a42-4e01-42c0-ba82-17bc2f84d0c2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "215ac9f0-bc88-4a91-813e-ad29f2ed3bed",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

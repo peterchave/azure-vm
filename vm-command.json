@@ -1,0 +1,159 @@
+{
+	"info": {
+		"_postman_id": "3126e2ed-8116-45d3-bcfb-3eff3d31a33b",
+		"name": "3b. Config encoder (Built from Image)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create AAD Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6ce4229d-984c-46f1-861e-dc1eaf5e6c85",
+						"exec": [
+							"// Retrieve access_token and set PM environment variable for all subsequent request",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"var json = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"bearerToken\", json.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{resource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{tenantId}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run command",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bdbbd2fe-4f46-4c58-afd3-d26f895570d4",
+						"exec": [
+							"pm.test(\"Command accepted\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([202]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"commandId\": \"RunShellScript\",\n  \"script\": [\"{{runCommand}}\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Compute/virtualMachines/{{vmName}}/runCommand?api-version=2020-06-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Compute",
+						"virtualMachines",
+						"{{vmName}}",
+						"runCommand"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-06-01"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9b3a2ade-8649-49a9-84b7-52e4b6f0855b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f0ec8d95-c603-4ba1-a195-a01c633c3670",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
