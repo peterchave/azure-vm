@@ -17,7 +17,7 @@ The ffmpeg encoder accepts an RTMP feed in then it publishes the output via Akam
 <br>  
 The script returns and RTMP entrypoint to send input stream to.
 <h3>Build encoder (from image)</h3>
-<code>./encoder-build.sh &lt;Name&gt; &lt;ImageName&gt; &lt;EPid&gt;</code><br>
+<code>./encoder-image.sh &lt;Name&gt; &lt;ImageName&gt; &lt;EPid&gt;</code><br>
 <br>
 &lt;ImageName&gt; - Name of image Ubuntu 18.04LTS with ffmpeg/nginx/pm2 installed on your Azure resource group.<br>
 <br>
