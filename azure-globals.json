@@ -1,0 +1,44 @@
+{
+	"id": "9f8b18ec-0a02-4606-8671-15e2b5a3f2be",
+	"values": [
+		{
+			"key": "vmName",
+			"value": "{{newMachineKey}}-vm",
+			"enabled": true
+		},
+		{
+			"key": "networkInterfaceName",
+			"value": "{{newMachineKey}}-nic",
+			"enabled": true
+		},
+		{
+			"key": "subnetName",
+			"value": "{{newMachineKey}}-subnet1",
+			"enabled": true
+		},
+		{
+			"key": "virtualNetworkName",
+			"value": "{{newMachineKey}}-vnic",
+			"enabled": true
+		},
+		{
+			"key": "publicIP",
+			"value": "{{newMachineKey}}-publicip",
+			"enabled": true
+		},
+		{
+			"key": "networkSecurityGroup",
+			"value": "{{newMachineKey}}-nsg",
+			"enabled": true
+		},
+		{
+			"key": "osDiskName",
+			"value": "{{newMachineKey}}-osdisk",
+			"enabled": true
+		}
+	],
+	"name": "Azure VM Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2020-10-14T13:29:37.190Z",
+	"_postman_exported_using": "Postman/7.33.1"
+}
