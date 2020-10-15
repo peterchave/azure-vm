@@ -1,0 +1,459 @@
+{
+	"info": {
+		"_postman_id": "2bf55585-f990-413a-a865-908c7418a636",
+		"name": "1. Create VM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create AAD",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "54be3699-9fab-48e2-b2b1-a05bb66141e7",
+						"exec": [
+							"// Retrieve access_token and set PM environment variable for all subsequent request",
+							"pm.test(\"Generate access token\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"})",
+							"var json = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"bearerToken\", json.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "{{resource}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"{{tenantId}}",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Virtual Network",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d0f5097-50df-455a-8939-203179fd9ee1",
+						"exec": [
+							"pm.test(\"Create Virtual Network\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"properties\": {\n    \"addressSpace\": {\n      \"addressPrefixes\": [\n        \"10.0.0.0/16\"\n      ]\n    }\n  },\n  \"location\": \"{{azureRegion}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/virtualNetworks/{{newMachineKey}}-vnic?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"virtualNetworks",
+						"{{newMachineKey}}-vnic"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Subnet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9597ad8a-e90c-403e-ad53-50cefd8bc9cb",
+						"exec": [
+							"pm.test(\"Create Subnet\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroups}}/providers/Microsoft.Network/virtualNetworks/{{virtualNetworkName}}/subnets/{{subnetName}}\",\n  \"name\": \"{{subnetName}}\",\n  \"properties\": {\n    \"addressPrefix\": \"10.0.0.0/16\",\n    \"provisioningState\": \"Succeeded\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/virtualNetworks/{{virtualNetworkName}}/subnets/{{subnetName}}?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"virtualNetworks",
+						"{{virtualNetworkName}}",
+						"subnets",
+						"{{subnetName}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Public IP",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "49fd8c60-f38d-48af-ad8d-54b86cc8030a",
+						"exec": [
+							"pm.test(\"Create Public IP\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"properties\": {\n    \"publicIPAllocationMethod\": \"Static\",\n    \"idleTimeoutInMinutes\": 10,\n    \"publicIPAddressVersion\": \"IPv4\"\n  },\n  \"sku\": {\n    \"name\": \"Standard\"\n  },\n  \"location\": \"{{azureRegion}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/publicIPAddresses/{{publicIP}}?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"publicIPAddresses",
+						"{{publicIP}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Network Security Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61e43099-c523-4b25-aa90-2ebbbe258f07",
+						"exec": [
+							"pm.test(\"Create Network Security Group\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"properties\": {\n    \"securityRules\": [\n      {\n        \"name\": \"ssh-management\",\n        \"properties\": {\n          \"protocol\": \"*\",\n          \"sourceAddressPrefix\": \"*\",\n          \"destinationAddressPrefix\": \"*\",\n          \"access\": \"Allow\",\n          \"destinationPortRange\": \"22\",\n          \"sourcePortRange\": \"*\",\n          \"priority\": 130,\n          \"direction\": \"Inbound\"\n        }\n      },\n      {\n        \"name\": \"rtmp-ingest\",\n        \"properties\": {\n          \"protocol\": \"*\",\n          \"sourceAddressPrefix\": \"*\",\n          \"destinationAddressPrefix\": \"*\",\n          \"access\": \"Allow\",\n          \"destinationPortRange\": \"1935\",\n          \"sourcePortRange\": \"*\",\n          \"priority\": 140,\n          \"direction\": \"Inbound\"\n        }\n      }\n    ]\n  },\n  \"location\": \"{{azureRegion}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/networkSecurityGroups/{{networkSecurityGroup}}?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"networkSecurityGroups",
+						"{{networkSecurityGroup}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create vNIC",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "da2431d0-7d2b-40cb-888a-8877a51c77de",
+						"exec": [
+							"pm.test(\"Create vNIC\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{bearerToken}}"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"properties\": {\n    \"enableAcceleratedNetworking\": false,\n    \"networkSecurityGroup\": {\n        \"id\": \"/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/networkSecurityGroups/{{networkSecurityGroup}}\"\n    },\n    \"ipConfigurations\": [\n      {\n        \"name\": \"ipconfig1\",\n        \"properties\": {\n          \"publicIPAddress\": {\n            \"id\": \"/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/publicIPAddresses/{{publicIP}}\"\n          },\n          \"subnet\": {\n            \"id\": \"/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/virtualNetworks/{{virtualNetworkName}}/subnets/{{subnetName}}\"\n          }\n        }\n      }\n    ]\n  },\n  \"location\": \"{{azureRegion}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/networkInterfaces/{{networkInterfaceName}}?api-version=2020-05-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Network",
+						"networkInterfaces",
+						"{{networkInterfaceName}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2020-05-01"
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create VM",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6a65eb8f-fb75-4655-a255-9bd6dc0fb527",
+						"exec": [
+							"pm.test(\"Create VM\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"location\": \"{{azureRegion}}\",\n  \"name\": \"{{vmName}}\",\n  \"properties\": {\n    \"hardwareProfile\": {\n      \"vmSize\": \"Standard_D3_v2\"\n    },\n    \"storageProfile\": {\n      \"imageReference\": {\n        \"sku\": \"18.04-LTS\",\n        \"publisher\": \"Canonical\",\n        \"version\": \"latest\",\n        \"offer\": \"UbuntuServer\"\n      },\n      \"osDisk\": {\n        \"caching\": \"ReadWrite\",\n        \"managedDisk\": {\n          \"storageAccountType\": \"Standard_LRS\"\n        },\n        \"name\": \"{{osDiskName}}\",\n        \"createOption\": \"FromImage\"\n      }\n    },\n    \"osProfile\": {\n      \"adminUsername\": \"encadmin\",\n      \"computerName\": \"{{vmName}}\",\n      \"linuxConfiguration\": {\n        \"ssh\": {\n          \"publicKeys\": [\n            {\n              \"path\": \"/home/encadmin/.ssh/authorized_keys\",\n              \"keyData\": \"{{sshKey}}\"\n            }\n          ]\n        },\n        \"disablePasswordAuthentication\": true\n      }\n    },\n    \"networkProfile\": {\n      \"networkInterfaces\": [\n        {\n          \"id\": \"/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Network/networkInterfaces/{{networkInterfaceName}}\",\n          \"properties\": {\n            \"primary\": true\n          }\n        }\n      ]\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Compute/virtualMachines/{{vmName}}?api-version=2017-12-01",
+					"protocol": "https",
+					"host": [
+						"management",
+						"azure",
+						"com"
+					],
+					"path": [
+						"subscriptions",
+						"{{subscriptionId}}",
+						"resourceGroups",
+						"{{resourceGroupName}}",
+						"providers",
+						"Microsoft.Compute",
+						"virtualMachines",
+						"{{vmName}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2017-12-01"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
